@@ -17,11 +17,43 @@ public class ClientReciever implements Runnable {
     public void run() {
         try {
             String line;
+            Packet receivedPacket = null;
             // jesli running=true i strumień nie jest zamknięty
             while (running && (line = reader.readLine()) != null) {
-                System.out.println("\nSerwer: " + line);
+                receivedPacket = Packet.fromJson(line);
+                if (receivedPacket == null) continue;
+
+                //rodzaj powiadomienia w zaleznosci od rodzaju packetu
+                switch (receivedPacket.getType()) {
+                    case SUCCESS:
+                        System.out.println("\nsuccess: " + receivedPacket.getData());
+                        break;
+
+                    case ERROR:
+                        System.err.println("\nerror: " + receivedPacket.getData());
+                        break;
+
+                    case RECEIVE_MESSAGE:
+                        System.out.println("\n[" + receivedPacket.getSender() + "]: " + receivedPacket.getData());
+                        break;
+
+                    case FRIEND_LIST:
+                        System.out.println("\nlista znajomych:");
+                        System.out.println(receivedPacket.getData());
+                        System.out.println("\n");
+                        break;
+
+                    case NOTIFICATION:
+                        System.out.println("\nnontification: " + receivedPacket.getData());
+                        break;
+
+                    default:
+                        System.out.println("\nodebrano pakiet: " + receivedPacket.getType());
+                        break;
+                }
                 System.out.flush();
             }
+
         } catch (IOException e) {
             if (running) {
                 System.err.println("\nutracono połączenie z serwerem.");

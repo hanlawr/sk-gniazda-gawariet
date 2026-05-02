@@ -1,9 +1,10 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import com.google.gson.Gson;
 
 // pakiet do komunikacji między serwerem a klientem
 public class Packet {
-
+    private static final Gson gson = new Gson();
     private PacketEnum type; //określa typ pakietu
     private String sender;
     private String recipient;
@@ -51,4 +52,15 @@ public class Packet {
     public void setData(String data){
         this.data = data;
     }
+
+    public String toJson() {
+        return gson.toJson(this);
+    }
+
+    public static Packet fromJson(String json) {
+        return gson.fromJson(json, Packet.class);
+    }
+
+
+
 }

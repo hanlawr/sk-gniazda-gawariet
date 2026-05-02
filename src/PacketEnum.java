@@ -2,7 +2,7 @@ public enum PacketEnum {
     // stan
     LOGIN,
     LOGOUT,
-    REGISTER,
+    REGISTER, //?
 
     // opcje wiadomosci
     SEND_MESSAGE,
