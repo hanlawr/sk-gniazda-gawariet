@@ -1,6 +1,9 @@
+package packet;
+
+import com.google.gson.Gson;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import com.google.gson.Gson;
 
 // pakiet do komunikacji między serwerem a klientem
 public class Packet {

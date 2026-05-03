@@ -1,5 +1,8 @@
 import com.google.gson.Gson;
 
+import packet.Packet;
+import packet.PacketEnum;
+
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;

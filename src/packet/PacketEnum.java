@@ -1,3 +1,5 @@
+package packet;
+
 public enum PacketEnum {
     // stan
     LOGIN,
