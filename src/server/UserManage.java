@@ -10,11 +10,11 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserManage {
-    private static final Logger LOGGER = Logger.getLogger(UserManage.class.getName());
     private static final String DATA_FILE = "data/users.json"; //zapisywani użytkownicy w pliku .json
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create(); //obsługa plików .json przez bibliotekę GSON
@@ -36,9 +36,8 @@ public class UserManage {
             if (loaded != null) {
                 users = loaded; //pobranie z pliku
             }
-            LOGGER.info("wczytano " + users.size() + " userów z " + DATA_FILE);
         } catch (IOException e) {
-            LOGGER.severe("błąd wczytywania userów " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -48,7 +47,7 @@ public class UserManage {
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             gson.toJson(users, writer);
         } catch (IOException e) {
-            LOGGER.severe("błąd przy zapisie danych usera " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -58,7 +57,6 @@ public class UserManage {
         String hash = hashPassword(password);
         users.put(login, new ModelUser(login, hash));
         saveUsers();
-        LOGGER.info("rejestracja użytkownika: " + login);
         return true;
     }
 

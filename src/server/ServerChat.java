@@ -6,13 +6,11 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Logger;
 
 public class ServerChat {
     private static final int PORT        = 12347;
     private static final int MAX_CLIENTS = 10;
 
-    private static final Logger LOGGER = Logger.getLogger(ServerChat.class.getName());
 
     private final UserManage  userManager;
     private final SessionManage sessionManager;
@@ -27,12 +25,10 @@ public class ServerChat {
     }
 
     public void start() {
-        LOGGER.info("sewer uruchomiony na " + PORT);
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (!Thread.currentThread().isInterrupted()) {
                 Socket clientSocket = serverSocket.accept();
                 if (connectionSlots.tryAcquire()) {
-                    LOGGER.info("Nowe połączenie: " + clientSocket.getInetAddress());
                     threadPool.execute(() -> {
                         try {
                             new ClientHandler(clientSocket, userManager, sessionManager).run();
@@ -41,12 +37,12 @@ public class ServerChat {
                         }
                     });
                 } else {
-                    LOGGER.warning("Odrzucono połączenie " + clientSocket.getInetAddress());
+                    System.out.println("Odrzucono połączenie " + clientSocket.getInetAddress());
                     clientSocket.close();
                 }
             }
         } catch (IOException e) {
-            LOGGER.severe("Błąd serwera: " + e.getMessage());
+            System.out.println(e.getMessage());
         } finally {
             shutdown();
         }
@@ -54,7 +50,6 @@ public class ServerChat {
 
     private void shutdown() {
         threadPool.shutdown();
-        LOGGER.info("Serwer zatrzymany.");
     }
 
     public static void main(String[] args) {

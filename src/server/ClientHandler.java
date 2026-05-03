@@ -7,10 +7,8 @@ import packet.PacketEnum;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.logging.Logger;
 
 public class ClientHandler implements Runnable{
-    private static final Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
 
     private final Socket socket;
     private final UserManage userManager;
@@ -37,15 +35,13 @@ public class ClientHandler implements Runnable{
                 handlePacket(packet);
             }
         } catch (IOException e) {
-            LOGGER.info("Klient rozłączony: " + (loggedInUser != null ? loggedInUser : socket.getInetAddress()));
+            System.out.println(e.getMessage());
         } finally {
             cleanup();
         }
     }
     private void handlePacket(Packet packet) {
         if (packet == null || packet.getType() == null) return;
-
-        LOGGER.info("[" + packet.getType() + "] od: " + packet.getSender());
 
         switch (packet.getType()) {
             case LOGIN:                  handleLogin(packet);         break;
@@ -77,7 +73,6 @@ public class ClientHandler implements Runnable{
         loggedInUser = login;
         sessionManager.addSession(login, socket, writer);
         send(success("Zalogowano jako " + login));
-        LOGGER.info("Zalogowano: " + login);
     }
 
     private void handleRegister(Packet packet) {
@@ -97,7 +92,6 @@ public class ClientHandler implements Runnable{
     private void handleLogout() {
         if (loggedInUser != null) {
             sessionManager.removeSession(loggedInUser);
-            LOGGER.info("Wylogowano: " + loggedInUser);
             loggedInUser = null;
         }
         send(success("Wylogowano"));
@@ -125,7 +119,6 @@ public class ClientHandler implements Runnable{
         );
 
         send(success("Wiadomość dostarczono"));
-        LOGGER.info("Wiadomość: " + loggedInUser + " -> " + recipient + ": " + message);
     }
 
 
