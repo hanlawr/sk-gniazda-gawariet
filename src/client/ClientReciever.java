@@ -1,3 +1,5 @@
+package client;
+
 import packet.Packet;
 
 import java.io.BufferedReader;
