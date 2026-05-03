@@ -1,5 +1,4 @@
 package client;
-import com.google.gson.Gson;
 import packet.Packet;
 import packet.PacketEnum;
 import java.io.*;
@@ -9,27 +8,22 @@ import java.util.Scanner;
 import java.util.logging.*;
 
 public class ClientChat {
-    static Logger LOGGER = Logger.getLogger(ClientChat.class.getName());
     private static String currentUser = null;
     private static String host;
     private static int port;
-    private final Gson gson = new Gson();
-    private static Socket socket;
     private static PrintWriter writer;
+    private static Socket socket;
 
     //konstruktor
-
     public ClientChat(String host, int port) {
         ClientChat.host = host;
         ClientChat.port = port;
     }
 
     public void start() {
-        Scanner sc = new Scanner(System.in);
-        String username;
+
 
         //najpierw łączę z serwerem
-
         try {
             socket = new Socket(host, port);
             writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
@@ -38,20 +32,22 @@ public class ClientChat {
 
 
 
-//osobny watek na odbieranie wiadomosci
+            //osobny watek na odbieranie wiadomosci
             ClientReciever receiver = new ClientReciever(reader);
             Thread receiverThread = new Thread(receiver);
             receiverThread.start();
+
             printHelp();
-            // petla do wysylania wiadomosci, w tym logowania
+
+            // petla do wysylania wiadomosci, w tym logowania, rejestrowania
             sendingLoop(receiver);
+
             //zamkniecie
-            if (socket != null && !socket.isClosed()) {
+            if (!socket.isClosed()) {
                 socket.close();
             }
             System.out.println("rozłączono.");
         }
-
         catch (Exception e) {
             System.err.println("błąd : " + e.getMessage());
         }
@@ -68,16 +64,27 @@ public class ClientChat {
                 System.out.print("> ");
                 continue;
             }
-            LOGGER.fine("komenda: " + input);
+
+
+            //exit poza process command, bo gdyby tam to przy return wychodził by tylko z tej funkcji a nie z całego while
             if (input.equalsIgnoreCase("exit")) {
                 if (currentUser != null) {
                     send(new Packet(PacketEnum.LOGOUT, currentUser, "SERVER", null));
                 }
+                try {
+                    if (socket != null && !socket.isClosed()) {
+                        socket.close();
+                    }
+                } catch (IOException e) {
+                    System.err.println("błąd : " + e.getMessage());
+
+                }
+
                 receiver.stop();
-                break;
+                return;
             }
 
-//główna funkcja obsługująca co się dzieje
+            //główna funkcja obsługująca co się dzieje
             processCommand(input);
             System.out.print("> ");
         }
@@ -97,8 +104,7 @@ public class ClientChat {
         return true;
     }
 
-//główna funkcja obsługująca co się dzieje
-
+    //główna funkcja obsługująca co się dzieje
     private static void processCommand(String input) {
         String[] parts = input.split(" ", 3);
         String cmd = parts[0].toLowerCase();
@@ -143,46 +149,23 @@ public class ClientChat {
     }
 
 
-//wyswietlanie pomocy
-
+    //wyswietlanie pomocy
     private static void printHelp() {
         System.out.println(" komendy ");
         System.out.println(" register <login> <hasło> nowe konto ");
         System.out.println(" login <login> <hasło> logowanie ");
-        System.out.println(" logout wylogowanie ");
+        System.out.println(" logout wylogowanie");
         System.out.println(" msg <odbiorca> <treść> wyślij wiadomość ");
         System.out.println(" help pomoc ");
         System.out.println(" exit zakończ ");
 
     }
 
-    private static void configureLogging() {
-
-        LogManager.getLogManager().reset();
-        Logger root = Logger.getLogger("");
-        root.setLevel(Level.ALL);
-
-        try {
-
-            new java.io.File("logs").mkdirs();
-            FileHandler fh = new FileHandler("logs/client.log", true);
-            fh.setLevel(Level.ALL);
-            fh.setFormatter(new SimpleFormatter());
-            root.addHandler(fh);
-        } catch (IOException e) {
-            System.err.println("nie można otworzyć pliku logów klienta: " + e.getMessage());
-
-        }
-
-    }
-
-    public static void main(String[] args) {
-
-        configureLogging();
+   public static void main(String[] args) {
+        //jesli nie zostaną podane argumenty przy uruchamianiu programu to ustawiane są defaultowe
         String host = args.length > 0 ? args[0] : "localhost";
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 12347;
         new ClientChat(host, port).start();
-
     }
 
 
