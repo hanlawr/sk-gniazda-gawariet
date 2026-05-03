@@ -1,15 +1,14 @@
 package client;
-
 import packet.Packet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
 
-/* osobny wątek umożliwający odbiór wiadomości*/
+// osobny wątek umożliwający odbiór wiadomości
 
 public class ClientReciever implements Runnable {
-    private BufferedReader reader;
+    private final BufferedReader reader;
     private volatile boolean running = true; //czy ma działać, volatile żeby ne tworzyła się kopia, tylko było operowan ena tej wartości
 
 
@@ -21,11 +20,11 @@ public class ClientReciever implements Runnable {
     public void run() {
         try {
             String line;
-            Packet receivedPacket = null;
-            // jesli running=true i strumień nie jest zamknięty
+            Packet receivedPacket;
+            //jesli running=true i strumień nie jest zamknięty
             while (running && (line = reader.readLine()) != null) {
                 receivedPacket = Packet.fromJson(line);
-                if (receivedPacket == null) continue;
+                if (receivedPacket == null) continue;//pomijamy puste packety
 
                 //rodzaj powiadomienia w zaleznosci od rodzaju packetu
                 switch (receivedPacket.getType()) {
@@ -38,7 +37,7 @@ public class ClientReciever implements Runnable {
                         break;
 
                     case RECEIVE_MESSAGE:
-                        System.out.println("\n[" + receivedPacket.getSender() + "]: " + receivedPacket.getData());
+                        System.out.println("\n" + receivedPacket.getSender() + ": " + receivedPacket.getData());
                         break;
 
                     case NOTIFICATION:
