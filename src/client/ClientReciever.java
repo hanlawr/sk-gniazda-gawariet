@@ -6,7 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 
-/* osobny wątek umożliwający odbiór wiadomości bez blokowania pisania */
+/* osobny wątek umożliwający odbiór wiadomości*/
 
 public class ClientReciever implements Runnable {
     private BufferedReader reader;
@@ -40,12 +40,6 @@ public class ClientReciever implements Runnable {
                     case RECEIVE_MESSAGE:
                         System.out.println("\n[" + receivedPacket.getSender() + "]: " + receivedPacket.getData());
                         break;
-
-                    /*case FRIEND_LIST:
-                        System.out.println("\nlista znajomych:");
-                        System.out.println(receivedPacket.getData());
-                        System.out.println("\n");
-                        break;*/
 
                     case NOTIFICATION:
                         System.out.println("\nnontification: " + receivedPacket.getData());
