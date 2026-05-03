@@ -26,6 +26,7 @@ public class UserManage {
     private synchronized void loadUsers() {
         File file = new File(DATA_FILE);
         if (!file.exists()) {
+            file.getParentFile().mkdirs();
             saveUsers();
             return;
         }
@@ -43,6 +44,7 @@ public class UserManage {
 
     private synchronized void saveUsers() {
         File file = new File(DATA_FILE);
+        file.getParentFile().mkdirs();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             gson.toJson(users, writer);
         } catch (IOException e) {
