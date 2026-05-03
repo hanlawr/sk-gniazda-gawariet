@@ -100,7 +100,7 @@ public class ClientChat {
     }
 
 
-//główna funkcja
+//główna funkcja obsługująca co się dzieje
     private static void processCommand(String input) {
         String[] parts = input.split(" ", 3);
         String cmd = parts[0].toLowerCase();
@@ -123,7 +123,8 @@ public class ClientChat {
                 break;
 
             case "logout":
-                if (currentUser == null) { System.out.println("Nie jesteś zalogowany."); return; }
+                if (currentUser == null) { System.out.println("nie jesteś zalogowany.");
+                    return; }
                 send(new Packet(PacketEnum.LOGOUT, currentUser, "SERVER", null));
                 currentUser = null;
                 break;
@@ -132,7 +133,7 @@ public class ClientChat {
                 if (parts.length < 3) {
                     System.out.println("msg <odbiorca> <treść>");
                     return; }
-                if (!requireLogin()) return;
+                if (!requireLogin()) return;//tylko zalogowany może wysyłać
                 send(new Packet(PacketEnum.SEND_MESSAGE, currentUser, parts[1], parts[2]));
                 break;
 
@@ -153,10 +154,10 @@ public class ClientChat {
         System.out.println("  login    <login> <hasło>   logowanie           ");
         System.out.println("  logout                     wylogowanie         ");
         System.out.println("  msg <odbiorca> <treść>     wyślij wiadomość    ");
-        System.out.println("  addfriend <login>          zaproś do znajomych ");
-        System.out.println("  accept <login>             akceptuj zaproszenie");
-        System.out.println("  reject <login>             odrzuć zaproszenie  ");
-        System.out.println("  friends                    lista znajomych     ");
+        //System.out.println("  addfriend <login>          zaproś do znajomych ");
+        //System.out.println("  accept <login>             akceptuj zaproszenie");
+        //System.out.println("  reject <login>             odrzuć zaproszenie  ");
+        //System.out.println("  friends                    lista znajomych     ");
         System.out.println("  help                       pomoc               ");
         System.out.println("  exit                       zakończ             ");
 

@@ -37,11 +37,11 @@ public class ClientReciever implements Runnable {
                         System.out.println("\n[" + receivedPacket.getSender() + "]: " + receivedPacket.getData());
                         break;
 
-                    case FRIEND_LIST:
+                    /*case FRIEND_LIST:
                         System.out.println("\nlista znajomych:");
                         System.out.println(receivedPacket.getData());
                         System.out.println("\n");
-                        break;
+                        break;*/
 
                     case NOTIFICATION:
                         System.out.println("\nnontification: " + receivedPacket.getData());
