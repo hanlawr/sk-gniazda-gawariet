@@ -25,6 +25,7 @@ public class ServerChat {
     }
 
     public void start() {
+        System.out.println("Uruchomiono serwer");
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (!Thread.currentThread().isInterrupted()) {
                 Socket clientSocket = serverSocket.accept();
@@ -32,6 +33,7 @@ public class ServerChat {
                     threadPool.execute(() -> {
                         try {
                             new ClientHandler(clientSocket, userManager, sessionManager).run();
+
                         } finally {
                             connectionSlots.release();
                         }
