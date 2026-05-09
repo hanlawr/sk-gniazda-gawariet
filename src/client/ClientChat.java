@@ -139,6 +139,33 @@ public class ClientChat {
                 if (!requireLogin()) return;//tylko zalogowany może wysyłać
                 send(new Packet(PacketEnum.SEND_MESSAGE, currentUser, parts[1], parts[2]));
                 break;
+            case "add":
+                if (parts.length < 2) {
+                    System.out.println("add <login>");
+                }
+                if (!requireLogin()) return;
+                send(new Packet(PacketEnum.ADD_FRIEND, currentUser, "SERVER", parts[1]));
+                break;
+
+            case "accept":
+                if (parts.length < 2) {
+                    System.out.println("accept <login>"); }
+                if (!requireLogin()) return;
+                send(new Packet(PacketEnum.ACCEPT_FRIEND, currentUser, "SERVER", parts[1]));
+                break;
+
+            case "reject":
+                if (parts.length < 2) {
+                    System.out.println("reject <login>"); }
+                if (!requireLogin()) return;
+                send(new Packet(PacketEnum.REJECT_FRIEND, currentUser, "SERVER", parts[1]));
+                break;
+
+            case "friends":
+                if (!requireLogin()) return;
+                send(new Packet(PacketEnum.FRIEND_LIST, currentUser, "SERVER", null));
+                break;
+
             case "help":
                 printHelp();
                 break;
@@ -155,7 +182,11 @@ public class ClientChat {
         System.out.println(" register <login> <hasło> nowe konto ");
         System.out.println(" login <login> <hasło> logowanie ");
         System.out.println(" logout wylogowanie");
-        System.out.println(" msg <odbiorca> <treść> wyślij wiadomość ");
+        System.out.println(" msg <odbiorca> <treść> wyślij wiadomość");
+        System.out.println(" add <login>  zaproś do znajomych");
+        System.out.println(" accept <login>  zaakceptuj znajomego");
+        System.out.println(" reject <login>  odrzuć znajomego");
+        System.out.println(" friends wyświetl listę swoich znajomych");
         System.out.println(" help pomoc ");
         System.out.println(" exit zakończ ");
 

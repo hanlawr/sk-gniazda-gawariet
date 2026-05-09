@@ -23,13 +23,13 @@ public class ClientReciever implements Runnable {
             Packet receivedPacket;
             //jesli running=true i strumień nie jest zamknięty
             while (running && (line = reader.readLine()) != null) {
-                receivedPacket = Packet.fromJson(line);
+                receivedPacket = Packet.fromJson(line);// recieved packet od serwera
                 if (receivedPacket == null) continue;//pomijamy puste packety
 
                 //rodzaj powiadomienia w zaleznosci od rodzaju packetu
                 switch (receivedPacket.getType()) {
                     case SUCCESS:
-                        System.out.println("\nsuccess: " + receivedPacket.getData());
+                        System.out.println("\nsukces: " + receivedPacket.getData());
                         break;
 
                     case ERROR:
@@ -41,9 +41,17 @@ public class ClientReciever implements Runnable {
                         break;
 
                     case NOTIFICATION:
-                        System.out.println("\nnontification: " + receivedPacket.getData());
+                        System.out.println("\npowiadomienie: " + receivedPacket.getData());
                         break;
-
+                    case FRIEND_NOTIFICATION:
+                        System.out.println("zaproszenie do znajomych: " + receivedPacket.getData()
+                                + "chce cie dodac.");
+                        System.out.println("accept <login> żeby zaakceptować" );
+                        System.out.println(" reject <login>  żeby odrzucić " );
+                        break;
+                    case FRIEND_LIST:
+                        printFriendList(receivedPacket.getData());
+                        break;
                     default:
                         System.out.println("\nodebrano pakiet: " + receivedPacket.getType());
                         break;
@@ -67,4 +75,20 @@ public class ClientReciever implements Runnable {
         } catch (IOException e) {
         }
     }
+    private void printFriendList(String data) {
+        System.out.println("twoja lista znajomych:");
+        if (data == null || data.isBlank()) {
+            System.out.println("nie masz znajomych :c");
+            return;
+        }
+        for (String entry : data.split(",")) //oddzielany znajomych przecinkami
+        {
+            String[] parts = entry.split(":");// status oddzielony dwukropkiem od loginu
+            if (parts.length == 2) {
+                String icon = "online".equals(parts[1]) ? "online" : "offline";
+                System.out.println("  " + icon + " " + parts[0]);
+            }
+        }
+    }
+
 }
