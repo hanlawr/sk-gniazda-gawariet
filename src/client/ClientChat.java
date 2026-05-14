@@ -194,7 +194,7 @@ public class ClientChat {
 
    public static void main(String[] args) {
         //jesli nie zostaną podane argumenty przy uruchamianiu programu to ustawiane są defaultowe
-        String host = args.length > 0 ? args[0] : "10.81.66.9"; //lub localhost
+        String host = args.length > 0 ? args[0] : "localhost"; //lub localhost
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 12347;
         new ClientChat(host, port).start();
     }

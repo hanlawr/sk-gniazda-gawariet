@@ -7,6 +7,7 @@ import packet.PacketEnum;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 public class ClientHandler implements Runnable{
 
@@ -48,8 +49,12 @@ public class ClientHandler implements Runnable{
             case REGISTER:               handleRegister(packet);      break;
             case LOGOUT:                 handleLogout();              break;
             case SEND_MESSAGE:           handleSendMessage(packet);   break;
+            case ADD_FRIEND:             handleAddFriend(packet);     break;
+            case ACCEPT_FRIEND:          handleAcceptFriend(packet);  break;
+            case REJECT_FRIEND:          handleRejectFriend(packet);  break;
+            case FRIEND_LIST:            handleGetFriends();          break;
             default:
-                send(error("Nieznany typ pakietu: " + packet.getType()));
+                send(error("nieznany typ pakietu " + packet.getType()));
         }
     }
 
@@ -132,11 +137,11 @@ public class ClientHandler implements Runnable{
     }
 
     private Packet error(String msg) {
-        return new Packet(PacketEnum.ERROR, "SERVER", loggedInUser, msg);
+        return new Packet(PacketEnum.ERROR, "serwer", loggedInUser, msg);
     }
 
     private Packet success(String msg) {
-        return new Packet(PacketEnum.SUCCESS, "SERVER", loggedInUser, msg);
+        return new Packet(PacketEnum.SUCCESS, "server", loggedInUser, msg);
     }
 
     private void send(Packet packet) {
@@ -151,7 +156,88 @@ public class ClientHandler implements Runnable{
         if (loggedInUser != null) {
             sessionManager.removeSession(loggedInUser);
         }
-        try { socket.close(); } catch (IOException ignored) {}
+        try { socket.close();
+        }
+        catch (IOException ignored) {}
+    }
+    private void handleAddFriend(Packet packet) {
+        if (!requireLogin()) return;
+
+        String target = packet.getData();
+        if (target == null || target.isBlank()) {
+            send(error("podaj login użytkownika"));
+            return;
+        }
+        if (target.equals(loggedInUser)) {
+            send(error("nie możesz dodać siebie do znajomych"));
+            return;
+        }
+        if (!userManager.userExists(target)) {
+            send(error("użytkownik '" + target + "' nie istnieje"));
+            return;
+        }
+        if (userManager.areFriends(loggedInUser, target)) {
+            send(error("jesteście już znajomymi"));
+            return;
+        }
+
+        if (userManager.sendFriendRequest(loggedInUser, target)) {
+            send(success("zaproszenie wysłane do " + target));
+
+            if (sessionManager.isOnline(target)) {
+                sessionManager.getSession(target).getWriter().println(
+                        gson.toJson(new Packet(PacketEnum.FRIEND_NOTIFICATION, "serwer", target, loggedInUser))
+                );
+            }
+        } else {
+            send(error("nie można wysłać zaproszenia do " + target));
+        }
+    }
+    private void handleAcceptFriend(Packet packet) {
+        if (!requireLogin()) return;
+
+        String from = packet.getData();
+        if (from == null) {
+            send(error("brak danych"));
+            return;
+        }
+
+        if (userManager.acceptFriendRequest(loggedInUser, from)) {
+            send(success("zaakceptowano zaproszenie od " + from));
+
+            if (sessionManager.isOnline(from)) {
+                sessionManager.getSession(from).getWriter().println(
+                        gson.toJson(new Packet(PacketEnum.NOTIFICATION, "server", from, loggedInUser + " zaakceptował Twoje zaproszenie!")));
+            }
+        } else {
+            send(error("brak zaproszenia od " + from));
+        }
+    }
+
+    private void handleRejectFriend(Packet packet) {
+        if (!requireLogin()) return;
+
+        String from = packet.getData();
+        if (from == null) { send(error("Brak danych")); return; }
+
+        if (userManager.rejectFriendRequest(loggedInUser, from)) {
+            send(success("odrzucono zaproszenie od " + from));
+        } else {
+            send(error("brak zaproszenia od " + from));
+        }
+    }
+
+    private void handleGetFriends() {
+        if (!requireLogin()) return;
+
+        List<String> friends = userManager.getFriends(loggedInUser);
+        StringBuilder sb = new StringBuilder();
+        for (String friend : friends) {
+            String status = sessionManager.isOnline(friend) ? "online" : "offline";
+            if (!sb.isEmpty()) sb.append(",");
+            sb.append(friend).append(":").append(status);
+        }
+        send(new Packet(PacketEnum.FRIEND_LIST, "serwer", loggedInUser, sb.toString()));
     }
 }
 

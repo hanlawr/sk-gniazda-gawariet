@@ -10,9 +10,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class UserManage {
     private static final String DATA_FILE = "data/users.json"; //zapisywani użytkownicy w pliku .json
@@ -80,4 +78,46 @@ public class UserManage {
             throw new RuntimeException("błąd hashowania", e);
         }
     }
+    public synchronized boolean areFriends(String login1, String login2) {
+        ModelUser user = users.get(login1);
+        return user != null && user.getFriends().contains(login2);
+    }
+
+    public synchronized boolean sendFriendRequest(String from, String to) {
+        ModelUser target = users.get(to);
+        if (target == null) return false;
+        if (target.getFriends().contains(from)) return false;
+        if (!target.getPendingFriends().contains(from)) {
+            target.getPendingFriends().add(from);
+            saveUsers();
+        }
+        return true;
+    }
+
+    public synchronized boolean acceptFriendRequest(String login, String from) {
+        ModelUser user = users.get(login);
+        ModelUser fromUser = users.get(from);
+        if (user == null || fromUser == null) return false;
+        if (!user.getPendingFriends().contains(from)) return false;
+
+        user.getPendingFriends().remove(from);
+        if (!user.getFriends().contains(from))       user.getFriends().add(from);
+        if (!fromUser.getFriends().contains(login))  fromUser.getFriends().add(login);
+        saveUsers();
+        return true;
+    }
+
+    public synchronized boolean rejectFriendRequest(String login, String from) {
+        ModelUser user = users.get(login);
+        if (user == null) return false;
+        boolean removed = user.getPendingFriends().remove(from);
+        if (removed) saveUsers();
+        return removed;
+    }
+
+    public synchronized List<String> getFriends(String login) {
+        ModelUser user = users.get(login);
+        return user != null ? new ArrayList<>(user.getFriends()) : Collections.emptyList();
+    }
+
 }
