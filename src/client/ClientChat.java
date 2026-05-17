@@ -31,7 +31,6 @@ public class ClientChat {
             System.out.println("połączono \n");
 
 
-
             //osobny watek na odbieranie wiadomosci
             ClientReciever receiver = new ClientReciever(reader);
             Thread receiverThread = new Thread(receiver);
@@ -161,6 +160,16 @@ public class ClientChat {
                 send(new Packet(PacketEnum.REJECT_FRIEND, currentUser, "SERVER", parts[1]));
                 break;
 
+            case "notifications":
+                if (!requireLogin()) return;
+                send(new Packet(PacketEnum.NOTIFICATION, currentUser, "SERVER", null));
+                break;
+
+            case "invites":
+                if (!requireLogin()) return;
+                send(new Packet(PacketEnum.FRIEND_NOTIFICATION, currentUser, "SERVER", null));
+                break;
+
             case "friends":
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.FRIEND_LIST, currentUser, "SERVER", null));
@@ -186,6 +195,8 @@ public class ClientChat {
         System.out.println(" add <login>  zaproś do znajomych");
         System.out.println(" accept <login>  zaakceptuj znajomego");
         System.out.println(" reject <login>  odrzuć znajomego");
+        System.out.println(" notifications wyświetl powiadomienia");
+        System.out.println(" invites wyświetl listę zaproszen do znajomych");
         System.out.println(" friends wyświetl listę swoich znajomych");
         System.out.println(" help pomoc ");
         System.out.println(" exit zakończ ");
@@ -194,7 +205,7 @@ public class ClientChat {
 
    public static void main(String[] args) {
         //jesli nie zostaną podane argumenty przy uruchamianiu programu to ustawiane są defaultowe
-        String host = args.length > 0 ? args[0] : "localhost"; //lub localhost
+        String host = args.length > 0 ? args[0] : "localhost"; //lub ip "10.81.66.9"
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 12347;
         new ClientChat(host, port).start();
     }

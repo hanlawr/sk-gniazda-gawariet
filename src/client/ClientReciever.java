@@ -41,13 +41,21 @@ public class ClientReciever implements Runnable {
                         break;
 
                     case NOTIFICATION:
-                        System.out.println("\npowiadomienie: " + receivedPacket.getData());
+                        System.out.println("\n  powiadomienie: " + receivedPacket.getData());
                         break;
                     case FRIEND_NOTIFICATION:
-                        System.out.println("zaproszenie do znajomych: " + receivedPacket.getData()
-                                + "chce cie dodac.");
-                        System.out.println("accept <login> żeby zaakceptować" );
-                        System.out.println(" reject <login>  żeby odrzucić " );
+                        if (receivedPacket.getData() == null) {
+                            System.out.println("brak nowych zaproszeń :c");
+                        }
+                        else {
+                            String[] invites = receivedPacket.getData().split(",");
+                            for (String inviter : invites) //bo jakby bylo wiecej niz jedno zaproszenie
+                            {
+                                System.out.println("\n"+inviter +" chce cie dodac");
+                            }
+                            System.out.println("accept <login> żeby zaakceptować");
+                            System.out.println(" reject <login>  żeby odrzucić ");
+                        }
                         break;
                     case FRIEND_LIST:
                         printFriendList(receivedPacket.getData());
