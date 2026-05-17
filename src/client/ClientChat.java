@@ -5,7 +5,6 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-import java.util.logging.*;
 
 public class ClientChat {
     private static String currentUser = null;
@@ -165,9 +164,10 @@ public class ClientChat {
                 send(new Packet(PacketEnum.NOTIFICATION, currentUser, "SERVER", null));
                 break;
 
+
             case "invites":
                 if (!requireLogin()) return;
-                send(new Packet(PacketEnum.FRIEND_NOTIFICATION, currentUser, "SERVER", null));
+                send(new Packet(PacketEnum.FRIEND_INVITE, currentUser, "SERVER", null));
                 break;
 
             case "friends":
@@ -195,7 +195,6 @@ public class ClientChat {
         System.out.println(" add <login>  zaproś do znajomych");
         System.out.println(" accept <login>  zaakceptuj znajomego");
         System.out.println(" reject <login>  odrzuć znajomego");
-        System.out.println(" notifications wyświetl powiadomienia");
         System.out.println(" invites wyświetl listę zaproszen do znajomych");
         System.out.println(" friends wyświetl listę swoich znajomych");
         System.out.println(" help pomoc ");

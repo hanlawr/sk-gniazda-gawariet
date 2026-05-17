@@ -53,6 +53,9 @@ public class ClientHandler implements Runnable{
             case ACCEPT_FRIEND:          handleAcceptFriend(packet);  break;
             case REJECT_FRIEND:          handleRejectFriend(packet);  break;
             case FRIEND_LIST:            handleGetFriends();          break;
+            //tu bym dodala
+            //case FRIEND_INVITE:            handleInvites();          break;
+            // analogiczne jak handleGetFriends
             default:
                 send(error("nieznany typ pakietu " + packet.getType()));
         }
@@ -186,7 +189,7 @@ public class ClientHandler implements Runnable{
 
             if (sessionManager.isOnline(target)) {
                 sessionManager.getSession(target).getWriter().println(
-                        gson.toJson(new Packet(PacketEnum.FRIEND_NOTIFICATION, "serwer", target, loggedInUser))
+                        gson.toJson(new Packet(PacketEnum.FRIEND_INVITE, "serwer", target, loggedInUser))
                 );
             }
         } else {

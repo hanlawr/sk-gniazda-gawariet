@@ -36,26 +36,17 @@ public class ClientReciever implements Runnable {
                         System.err.println("\nerror: " + receivedPacket.getData());
                         break;
 
+                    case NOTIFICATION:
+                        System.err.println("\npowiadomienie: " + receivedPacket.getData());
+                        break;
+
                     case RECEIVE_MESSAGE:
                         System.out.println("\n" + receivedPacket.getSender() + ": " + receivedPacket.getData());
                         break;
 
-                    case NOTIFICATION:
-                        System.out.println("\n  powiadomienie: " + receivedPacket.getData());
-                        break;
-                    case FRIEND_NOTIFICATION:
-                        if (receivedPacket.getData() == null) {
-                            System.out.println("brak nowych zaproszeń :c");
-                        }
-                        else {
-                            String[] invites = receivedPacket.getData().split(",");
-                            for (String inviter : invites) //bo jakby bylo wiecej niz jedno zaproszenie
-                            {
-                                System.out.println("\n"+inviter +" chce cie dodac");
-                            }
-                            System.out.println("accept <login> żeby zaakceptować");
-                            System.out.println(" reject <login>  żeby odrzucić ");
-                        }
+
+                    case FRIEND_INVITE:
+                            printInvites(receivedPacket.getData());
                         break;
                     case FRIEND_LIST:
                         printFriendList(receivedPacket.getData());
@@ -97,6 +88,22 @@ public class ClientReciever implements Runnable {
                 System.out.println("  " + icon + " " + parts[0]);
             }
         }
+        System.out.print("> ");
     }
 
+    private void printInvites(String data) {//analogicznie do printfriends
+        System.out.println("twoje zaproszenia:");
+        if (data == null || data.isBlank()) {
+            System.out.println("nie masz zaproszen :c");
+            return;
+        }
+        for (String inviter : data.split(",")) //oddzielany znajomych przecinkami
+        {
+                System.out.println("\n"+ inviter +" chce cie dodac");
+            }
+        System.out.println("accept <login> żeby zaakceptować");
+        System.out.println("reject <login>  żeby odrzucić ");
+        System.out.print("> ");
+    }
 }
+

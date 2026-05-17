@@ -15,7 +15,8 @@ public enum PacketEnum {
     ACCEPT_FRIEND,
     REJECT_FRIEND,
     FRIEND_LIST,
-    FRIEND_NOTIFICATION,
+    FRIEND_INVITE, //zaproszenie, zmieniłam z notification na invite zeby bylo bardzej intuicyjne
+
 
     // od systemu
     ERROR,
