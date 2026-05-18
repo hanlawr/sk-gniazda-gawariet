@@ -30,28 +30,35 @@ public class ClientReciever implements Runnable {
                 switch (receivedPacket.getType()) {
                     case SUCCESS:
                         System.out.println("\nsukces: " + receivedPacket.getData());
+                        System.out.print("> ");
                         break;
 
                     case ERROR:
                         System.err.println("\nerror: " + receivedPacket.getData());
+                        System.out.print("> ");
                         break;
 
                     case NOTIFICATION:
                         System.err.println("\npowiadomienie: " + receivedPacket.getData());
+                        System.out.print("> ");
                         break;
 
                     case RECEIVE_MESSAGE:
                         System.out.println("\n" + receivedPacket.getSender() + ": " + receivedPacket.getData());
+                        System.out.print("> ");
                         break;
 
                     case FRIEND_INVITE:
-                            printInvites(receivedPacket.getData());
+                        printInvites(receivedPacket.getData());
+                        System.out.print("> ");
                         break;
                     case FRIEND_LIST:
                         printFriendList(receivedPacket.getData());
+                        System.out.print("> ");
                         break;
                     default:
                         System.out.println("\nodebrano pakiet: " + receivedPacket.getType());
+                        System.out.print("> ");
                         break;
                 }
                 System.out.flush();
@@ -88,7 +95,7 @@ public class ClientReciever implements Runnable {
                 System.out.println("  " + icon + " " + parts[0]);
             }
         }
-        System.out.print("> ");
+
     }
 
     private void printInvites(String data) {//analogicznie do printfriends
@@ -103,7 +110,7 @@ public class ClientReciever implements Runnable {
             }
         System.out.println("accept <login> żeby zaakceptować");
         System.out.println("reject <login>  żeby odrzucić ");
-        System.out.print("> ");
+
     }
 }
 
