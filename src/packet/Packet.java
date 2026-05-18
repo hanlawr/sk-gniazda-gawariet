@@ -1,9 +1,5 @@
 package packet;
-
 import com.google.gson.Gson;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 // pakiet do komunikacji między serwerem a klientem
 public class Packet {
@@ -12,15 +8,9 @@ public class Packet {
     private String sender;
     private String recipient;
     private String data;
-    private String timestamp;
 
-    public Packet() {
-        this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-    }
-
-    //ustawianie pól pakietu
+    //konstruktor z ustawianiem pól pakietu
     public Packet(PacketEnum type, String sender, String recipient, String data) {
-        this();
         this.type = type;
         this.sender = sender;
         this.recipient = recipient;
@@ -40,22 +30,6 @@ public class Packet {
     public String getData(){
         return data;
     }
-    public String getTimestamp(){
-        return timestamp;
-    }
-    public void setType(PacketEnum type){
-        this.type = type;
-    }
-    public void setSender(String sender){
-        this.sender = sender;
-    }
-    public void setRecipient(String recipient){
-        this.recipient = recipient;
-    }
-    public void setData(String data){
-        this.data = data;
-    }
-
     public String toJson() {
         return gson.toJson(this);
     }

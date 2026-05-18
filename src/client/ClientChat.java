@@ -51,6 +51,8 @@ public class ClientChat {
         }
     }
 
+
+    // petla do wysylania packetów do servera
     private static void sendingLoop(ClientReciever receiver) {
         Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
         System.out.print("> ");
@@ -58,11 +60,11 @@ public class ClientChat {
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();
 
+            //przywracanie > enterem
             if (input.isEmpty()) {
                 System.out.print("> ");
                 continue;
             }
-
 
             //exit poza process command, bo gdyby tam to przy return wychodził by tylko z tej funkcji a nie z całego while
             if (input.equalsIgnoreCase("exit")) {
@@ -77,14 +79,12 @@ public class ClientChat {
                     System.err.println("błąd : " + e.getMessage());
 
                 }
-
                 receiver.stop();
                 return;
             }
 
             //główna funkcja obsługująca co się dzieje
             processCommand(input);
-            System.out.print("> ");
         }
     }
 
@@ -97,12 +97,13 @@ public class ClientChat {
     private static boolean requireLogin() {
         if (currentUser == null) {
             System.out.println("musisz się zalogować (login <login> <hasło>).");
+            System.out.print("> ");
             return false;
         }
         return true;
     }
 
-    //główna funkcja obsługująca co się dzieje
+    //główna funkcja obsługująca co się dzieje, jaki packet wysyłany do servera
     private static void processCommand(String input) {
         String[] parts = input.split(" ", 3);
         String cmd = parts[0].toLowerCase();
@@ -145,7 +146,6 @@ public class ClientChat {
                 }
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.ADD_FRIEND, currentUser, "SERVER", parts[1]));
-
                 break;
 
             case "accept":
@@ -169,13 +169,11 @@ public class ClientChat {
             case "invites":
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.FRIEND_INVITE, currentUser, "SERVER", null));
-
                 break;
 
             case "friends":
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.FRIEND_LIST, currentUser, "SERVER", null));
-
                 break;
 
             case "help":
@@ -183,7 +181,6 @@ public class ClientChat {
                 break;
             default:
                 System.out.println("nie ma takiej komendy. wpisz 'help' aby zobaczyć dostępne komendy.");
-
         }
 
     }

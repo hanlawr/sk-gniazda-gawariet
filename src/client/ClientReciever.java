@@ -1,6 +1,5 @@
 package client;
 import packet.Packet;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -11,7 +10,7 @@ public class ClientReciever implements Runnable {
     private final BufferedReader reader;
     private volatile boolean running = true; //czy ma działać, volatile żeby ne tworzyła się kopia, tylko było operowan ena tej wartości
 
-
+    //konstruktor
     public ClientReciever(BufferedReader reader) {
         this.reader = reader;
     }
@@ -29,30 +28,32 @@ public class ClientReciever implements Runnable {
                 //rodzaj powiadomienia w zaleznosci od rodzaju packetu
                 switch (receivedPacket.getType()) {
                     case SUCCESS:
-                        System.out.println("\nsukces: " + receivedPacket.getData());
+                        System.out.println("\rsukces: " + receivedPacket.getData());
                         System.out.print("> ");
                         break;
 
                     case ERROR:
-                        System.err.println("\nerror: " + receivedPacket.getData());
+                        System.err.println("\rerror: " + receivedPacket.getData());
                         System.out.print("> ");
                         break;
 
                     case NOTIFICATION:
-                        System.err.println("\npowiadomienie: " + receivedPacket.getData());
+                        System.err.println("\rpowiadomienie: " + receivedPacket.getData());
                         System.out.print("> ");
                         break;
 
                     case RECEIVE_MESSAGE:
-                        System.out.println("\n" + receivedPacket.getSender() + ": " + receivedPacket.getData());
+                        System.out.println("\r" + receivedPacket.getSender() + ": " + receivedPacket.getData());
                         System.out.print("> ");
                         break;
 
                     case FRIEND_INVITE:
+                        System.out.println("\r");
                         printInvites(receivedPacket.getData());
                         System.out.print("> ");
                         break;
                     case FRIEND_LIST:
+                        System.out.println("\r");
                         printFriendList(receivedPacket.getData());
                         System.out.print("> ");
                         break;
@@ -78,6 +79,7 @@ public class ClientReciever implements Runnable {
         try {
             if (reader != null) reader.close();// zamknięcie strumienia
         } catch (IOException e) {
+            System.err.println("błąd : " + e.getMessage());
 
         }
     }
@@ -91,8 +93,8 @@ public class ClientReciever implements Runnable {
         {
             String[] parts = entry.split(":");// status oddzielony dwukropkiem od loginu
             if (parts.length == 2) {
-                String icon = "online".equals(parts[1]) ? "online" : "offline";
-                System.out.println("  " + icon + " " + parts[0]);
+                String status = "online".equals(parts[1]) ? "online" : "offline";
+                System.out.println("  " + status + " " + parts[0]);
             }
         }
 
@@ -103,10 +105,10 @@ public class ClientReciever implements Runnable {
         if (data == null || data.isBlank()) {
             System.out.println("nie masz zaproszen :c");
             return;
-        } //chyba to już nie jest potrzebne przez obsługę w client handlerze (wyświetla że nikt nowy chce cie dodac XD)
+        }
         for (String inviter : data.split(",")) //oddzielany znajomych przecinkami
         {
-                System.out.println("\n"+ inviter +" chce cie dodac");
+                System.out.println(inviter +" chce cie dodac");
             }
         System.out.println("accept <login> żeby zaakceptować");
         System.out.println("reject <login>  żeby odrzucić ");
