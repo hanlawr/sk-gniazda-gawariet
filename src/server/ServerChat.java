@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 public class ServerChat {
-    private static final int PORT        = 12347;
+    private int PORT;
     private static final int MAX_CLIENTS = 10;
 
 
@@ -17,11 +17,12 @@ public class ServerChat {
     private final ExecutorService threadPool;
     private final Semaphore connectionSlots;
 
-    public ServerChat() {
+    public ServerChat(int port) {
         this.userManager     = new UserManage();
         this.sessionManager  = new SessionManage();
         this.threadPool      = Executors.newFixedThreadPool(MAX_CLIENTS);
         this.connectionSlots = new Semaphore(MAX_CLIENTS);
+        this.PORT=port;
     }
 
     public void start() {
@@ -55,6 +56,7 @@ public class ServerChat {
     }
 
     public static void main(String[] args) {
-        new ServerChat().start();
+        int port = args.length > 1 ? Integer.parseInt(args[0]) : 12347;
+        new ServerChat(port).start();
     }
 }

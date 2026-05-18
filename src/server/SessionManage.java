@@ -21,7 +21,8 @@ public class SessionManage {
 
         public boolean isOnline(String login) {
             ModelSesja s = sessions.get(login);
-            return s != null; //sprawdza w mapie czy taki login jest teraz zarejestrowany jako (login, sesja)
+            //sprawdza w mapie czy taki login jest teraz zarejestrowany jako (login, sesja)
+            return s != null;
         }
 
         public ModelSesja getSession(String login) {

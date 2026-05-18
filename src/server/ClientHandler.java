@@ -75,10 +75,13 @@ public class ClientHandler implements Runnable{
         if (sessionManager.isOnline(login)) {
             send(error("Użytkownik już zalogowany")); return;
         }
-
-        loggedInUser = login;
-        sessionManager.addSession(login, socket, writer);
-        send(success("Zalogowano jako " + login));
+        if(loggedInUser != null){
+            send(error("Jesteś już zalogowany na konto "+ login +". Nie możesz się ponownie zalogować. Najpierw się wyloguj komendą logout")); return;
+        }else{
+            loggedInUser = login;
+            sessionManager.addSession(login, socket, writer);
+            send(success("Zalogowano jako " + login));
+        }
     }
 
     private void handleRegister(Packet packet) {
@@ -87,6 +90,9 @@ public class ClientHandler implements Runnable{
 
         if (login == null || login.isBlank() || password == null || password.isBlank()) {
             send(error("login i hasło są puste.")); return;
+        }
+        if(loggedInUser != null){
+            send(error("Jesteś już zalogowany na konto "+ login +". Nie możesz się ponownie zarejestrować. Najpierw się wyloguj komendą logout"));
         }
         if (userManager.register(login, password)) {
             send(success("jesteś zarejestrowany. teraz zaloguj się login <login> <hasło>"));
@@ -118,12 +124,16 @@ public class ClientHandler implements Runnable{
         if (!sessionManager.isOnline(recipient)) {
             send(error("użytkownik o loginie '" + recipient + "' jest teraz offline")); return;
         }
+        if (recipient.equals(loggedInUser)) {
+            send(error("nie możesz wysłać wiadomości do siebie"));
+            return;
+        }
         if (userManager.areFriends(loggedInUser, recipient)) {
             ModelSesja recipientSession = sessionManager.getSession(recipient);
             recipientSession.getWriter().println(
                     gson.toJson(new Packet(PacketEnum.RECEIVE_MESSAGE, loggedInUser, recipient, message))
             );
-            //fajnie by było dodać że nie mozna wyslac wiadomosci do samego siebie ( jteraz pojawia sie ze nie jestesmy znajomymi)
+
             send(success("Wiadomość dostarczono"));
         }else{
             send(error("użytkownik o loginie " + recipient + " i ty nie jesteście znajomymi"));
