@@ -71,6 +71,7 @@ public class ClientReciever implements Runnable {
         try {
             if (reader != null) reader.close();// zamknięcie strumienia
         } catch (IOException e) {
+
         }
     }
     private void printFriendList(String data) {

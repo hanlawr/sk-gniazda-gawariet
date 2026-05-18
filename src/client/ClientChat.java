@@ -117,7 +117,7 @@ public class ClientChat {
                 break;
             case "login":
                 if (parts.length < 3) {
-                    System.out.println("register <login> <hasło>");
+                    System.out.println("login <login> <hasło>");
                     return; }
                 currentUser = parts[1];
                 send(new Packet(PacketEnum.LOGIN, parts[1], "SERVER", parts[2]));
@@ -157,11 +157,6 @@ public class ClientChat {
                     System.out.println("reject <login>"); }
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.REJECT_FRIEND, currentUser, "SERVER", parts[1]));
-                break;
-
-            case "notifications":
-                if (!requireLogin()) return;
-                send(new Packet(PacketEnum.NOTIFICATION, currentUser, "SERVER", null));
                 break;
 
 
