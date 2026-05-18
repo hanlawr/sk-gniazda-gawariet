@@ -116,7 +116,7 @@ public class ClientHandler implements Runnable{
             send(error("użytkownik o loginie'" + recipient + "' nie istnieje")); return;
         }
 
-        // dodać sprawdzanie czy są znajomymi!!!!!!!!!!!1
+        // dodać sprawdzanie czy są znajomymi!!!!!!!!!!!
         if (!sessionManager.isOnline(recipient)) {
             send(error("użytkownik o loginie '" + recipient + "' jest teraz offline")); return;
         }
@@ -239,7 +239,7 @@ public class ClientHandler implements Runnable{
         List<String> friends = userManager.getFriends(loggedInUser);
         StringBuilder sb = new StringBuilder();
         if (friends.isEmpty()) {
-            send(new Packet(PacketEnum.FRIEND_LIST, "SERVER", loggedInUser, " "));
+            send(new Packet(PacketEnum.FRIEND_LIST, "SERVER", loggedInUser, ""));
             return;
         }
         for (String friend : friends) {
@@ -255,7 +255,7 @@ public class ClientHandler implements Runnable{
         List<String> pendingInvites = userManager.getPendingFriends(loggedInUser);
 
         if (pendingInvites.isEmpty()) {
-            send(new Packet(PacketEnum.FRIEND_INVITE, "Serwer", loggedInUser,  " "));
+            send(new Packet(PacketEnum.FRIEND_INVITE, "Serwer", loggedInUser,  ""));
             return;
         }
 

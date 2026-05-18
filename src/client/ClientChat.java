@@ -111,6 +111,7 @@ public class ClientChat {
             case "register":
                 if (parts.length < 3) {
                     System.out.println("register <login> <hasło>");
+                    System.out.print("> ");
                     return;
                 }
                 send(new Packet(PacketEnum.REGISTER, parts[1], "SERVER", parts[2]));
@@ -118,12 +119,14 @@ public class ClientChat {
             case "login":
                 if (parts.length < 3) {
                     System.out.println("login <login> <hasło>");
+                    System.out.print("> ");
                     return; }
                 currentUser = parts[1];
                 send(new Packet(PacketEnum.LOGIN, parts[1], "SERVER", parts[2]));
                 break;
             case "logout":
                 if (currentUser == null) { System.out.println("nie jesteś zalogowany.");
+                    System.out.print("> ");
                     return;
                 }
                 send(new Packet(PacketEnum.LOGOUT, currentUser, "SERVER", null));
@@ -132,17 +135,21 @@ public class ClientChat {
             case "msg":
                 if (parts.length < 3) {
                     System.out.println("msg <odbiorca> <treść>");
+                    System.out.print("> ");
                     return;
                 }
                 if (!requireLogin()) return;//tylko zalogowany może wysyłać
                 send(new Packet(PacketEnum.SEND_MESSAGE, currentUser, parts[1], parts[2]));
+                System.out.print("> ");
                 break;
             case "add":
                 if (parts.length < 2) {
                     System.out.println("add <login>");
+
                 }
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.ADD_FRIEND, currentUser, "SERVER", parts[1]));
+                System.out.print("> ");
                 break;
 
             case "accept":
@@ -150,6 +157,7 @@ public class ClientChat {
                     System.out.println("accept <login>"); }
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.ACCEPT_FRIEND, currentUser, "SERVER", parts[1]));
+                System.out.print("> ");
                 break;
 
             case "reject":
@@ -157,24 +165,29 @@ public class ClientChat {
                     System.out.println("reject <login>"); }
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.REJECT_FRIEND, currentUser, "SERVER", parts[1]));
+                System.out.print("> ");
                 break;
 
 
             case "invites":
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.FRIEND_INVITE, currentUser, "SERVER", null));
+                System.out.print("> ");
                 break;
 
             case "friends":
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.FRIEND_LIST, currentUser, "SERVER", null));
+                System.out.print("> ");
                 break;
 
             case "help":
                 printHelp();
+                System.out.print("> ");
                 break;
             default:
                 System.out.println("nie ma takiej komendy. wpisz 'help' aby zobaczyć dostępne komendy.");
+                System.out.print("> ");
         }
 
     }
