@@ -123,7 +123,7 @@ public class ClientHandler implements Runnable{
             recipientSession.getWriter().println(
                     gson.toJson(new Packet(PacketEnum.RECEIVE_MESSAGE, loggedInUser, recipient, message))
             );
-            // fajnie by było dodać że nie mozna wyslac wiadomosci do samego siebie (teraz pojawia sie ze nie jestesmy znajomymi)
+            //fajnie by było dodać że nie mozna wyslac wiadomosci do samego siebie ( jteraz pojawia sie ze nie jestesmy znajomymi)
             send(success("Wiadomość dostarczono"));
         }else{
             send(error("użytkownik o loginie " + recipient + " i ty nie jesteście znajomymi"));

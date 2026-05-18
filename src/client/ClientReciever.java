@@ -25,7 +25,7 @@ public class ClientReciever implements Runnable {
                 receivedPacket = Packet.fromJson(line);// recieved packet od serwera
                 if (receivedPacket == null) continue;//pomijamy puste packety
 
-                //rodzaj powiadomienia w zaleznosci od rodzaju packetu
+                //rodzaj powiadomienia w zaleznosci od rodzaju packetu.
                 switch (receivedPacket.getType()) {
                     case SUCCESS:
                         System.out.println("\rsukces: " + receivedPacket.getData());

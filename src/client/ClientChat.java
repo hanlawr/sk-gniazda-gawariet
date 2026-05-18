@@ -37,7 +37,7 @@ public class ClientChat {
 
             printHelp();
 
-            // petla do wysylania wiadomosci, w tym logowania, rejestrowania
+            // petla do wysylania wiadomosci, w tym logowania, rejestrowania itd
             sendingLoop(receiver);
 
             //zamkniecie
