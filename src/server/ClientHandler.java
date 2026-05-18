@@ -108,7 +108,6 @@ public class ClientHandler implements Runnable{
 
         String recipient = packet.getRecipient();
         String message   = packet.getData();
-
         if (recipient == null || message == null || message.isBlank()) {
             send(error("nieprawidłowe dane wiadomości.")); return;
         }
@@ -116,17 +115,20 @@ public class ClientHandler implements Runnable{
             send(error("użytkownik o loginie'" + recipient + "' nie istnieje")); return;
         }
 
-        // dodać sprawdzanie czy są znajomymi!!!!!!!!!!!
         if (!sessionManager.isOnline(recipient)) {
             send(error("użytkownik o loginie '" + recipient + "' jest teraz offline")); return;
         }
+        if (userManager.areFriends(loggedInUser, recipient)) {
+            ModelSesja recipientSession = sessionManager.getSession(recipient);
+            recipientSession.getWriter().println(
+                    gson.toJson(new Packet(PacketEnum.RECEIVE_MESSAGE, loggedInUser, recipient, message))
+            );
 
-        ModelSesja recipientSession = sessionManager.getSession(recipient);
-        recipientSession.getWriter().println(
-                gson.toJson(new Packet(PacketEnum.RECEIVE_MESSAGE, loggedInUser, recipient, message))
-        );
+            send(success("Wiadomość dostarczono"));
+        }else{
+            send(error("użytkownik o loginie " + recipient + " i ty nie jesteście znajomymi"));
+        }
 
-        send(success("Wiadomość dostarczono"));
     }
 
 
@@ -261,7 +263,7 @@ public class ClientHandler implements Runnable{
 
         StringBuilder sb = new StringBuilder();
         for (String inviter : pendingInvites) {
-            if (sb.length() > 0) sb.append(",");
+            if (!sb.isEmpty()) sb.append(",");
             sb.append(inviter);
         }
         send(new Packet(PacketEnum.FRIEND_INVITE, "serwer", loggedInUser, sb.toString()));
