@@ -53,9 +53,7 @@ public class ClientHandler implements Runnable{
             case ACCEPT_FRIEND:          handleAcceptFriend(packet);  break;
             case REJECT_FRIEND:          handleRejectFriend(packet);  break;
             case FRIEND_LIST:            handleGetFriends();          break;
-            //tu bym dodala
-            //case FRIEND_INVITE:            handleInvites();          break;
-            // analogiczne jak handleGetFriends
+            case FRIEND_INVITE:          handleInvites();          break;
             default:
                 send(error("nieznany typ pakietu " + packet.getType()));
         }
@@ -183,7 +181,10 @@ public class ClientHandler implements Runnable{
             send(error("jesteście już znajomymi"));
             return;
         }
-
+        if (userManager.hasPendingFriendRequest(loggedInUser, target)) {
+            send(error("Użytkownik " + target + " już wysłał Ci zaproszenie. Zaakceptuj lub odrzuć je."));
+            return;
+        }
         if (userManager.sendFriendRequest(loggedInUser, target)) {
             send(success("zaproszenie wysłane do " + target));
 
@@ -235,12 +236,33 @@ public class ClientHandler implements Runnable{
 
         List<String> friends = userManager.getFriends(loggedInUser);
         StringBuilder sb = new StringBuilder();
+        if (friends.isEmpty()) {
+            send(new Packet(PacketEnum.NOTIFICATION, "SERVER", loggedInUser, "Brak znajomych"));
+            return;
+        }
         for (String friend : friends) {
             String status = sessionManager.isOnline(friend) ? "online" : "offline";
             if (!sb.isEmpty()) sb.append(",");
             sb.append(friend).append(":").append(status);
         }
         send(new Packet(PacketEnum.FRIEND_LIST, "serwer", loggedInUser, sb.toString()));
+    }
+    private void handleInvites(){
+        if (!requireLogin()) return;
+
+        List<String> pendingInvites = userManager.getPendingFriends(loggedInUser);
+
+        if (pendingInvites.isEmpty()) {
+            send(new Packet(PacketEnum.FRIEND_INVITE, "Serwer", loggedInUser, "Nikt nowy"));
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String inviter : pendingInvites) {
+            if (sb.length() > 0) sb.append(",");
+            sb.append(inviter);
+        }
+        send(new Packet(PacketEnum.FRIEND_INVITE, "serwer", loggedInUser, sb.toString()));
     }
 }
 

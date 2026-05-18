@@ -44,7 +44,6 @@ public class ClientReciever implements Runnable {
                         System.out.println("\n" + receivedPacket.getSender() + ": " + receivedPacket.getData());
                         break;
 
-
                     case FRIEND_INVITE:
                             printInvites(receivedPacket.getData());
                         break;
@@ -96,7 +95,7 @@ public class ClientReciever implements Runnable {
         if (data == null || data.isBlank()) {
             System.out.println("nie masz zaproszen :c");
             return;
-        }
+        } //chyba to już nie jest potrzebne przez obsługę w client handlerze (wyświetla że nikt nowy chce cie dodac XD)
         for (String inviter : data.split(",")) //oddzielany znajomych przecinkami
         {
                 System.out.println("\n"+ inviter +" chce cie dodac");

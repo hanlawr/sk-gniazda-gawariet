@@ -11,12 +11,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UserManage {
     private static final String DATA_FILE = "data/users.json"; //zapisywani użytkownicy w pliku .json
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create(); //obsługa plików .json przez bibliotekę GSON
-    private Map<String, ModelUser> users = new HashMap<>(); //zbiór loginów i danych użytkowników
+    private Map<String, ModelUser> users = new ConcurrentHashMap<>(); //zbiór loginów i danych użytkowników
     //używane synchronized żeby odpowiednio czekać na wątki
     public UserManage() {
         loadUsers();
@@ -80,7 +81,9 @@ public class UserManage {
     }
     public synchronized boolean areFriends(String login1, String login2) {
         ModelUser user = users.get(login1);
-        return user != null && user.getFriends().contains(login2);
+        if (user == null) return false;
+        List<String> friends = user.getFriends();
+        return friends != null && friends.contains(login2);
     }
 
     public synchronized boolean sendFriendRequest(String from, String to) {
@@ -117,7 +120,20 @@ public class UserManage {
 
     public synchronized List<String> getFriends(String login) {
         ModelUser user = users.get(login);
-        return user != null ? new ArrayList<>(user.getFriends()) : Collections.emptyList();
+        if (user == null) return Collections.emptyList();
+        List<String> friends = user.getFriends();
+        return friends != null ? new ArrayList<>(friends) : Collections.emptyList();
+    }
+    public synchronized List<String> getPendingFriends(String login) {
+        ModelUser user = users.get(login);
+        if (user == null) return Collections.emptyList();
+        List<String> pendingFriends = user.getPendingFriends();
+        return pendingFriends != null ? new ArrayList<>(pendingFriends) : Collections.emptyList();
     }
 
+    public synchronized boolean hasPendingFriendRequest(String login, String target) {
+        ModelUser user = users.get(login);
+        if (user == null) return false;
+        return getPendingFriends(login).contains(target);
+    }
 }
