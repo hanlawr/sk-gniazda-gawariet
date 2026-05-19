@@ -19,10 +19,11 @@ public class ClientChat {
         ClientChat.port = port;
     }
 
+
     public void start() {
 
 
-        //najpierw łączę z serwerem
+        //inicjowanie połączenia TCP z serwerem
         try {
             socket = new Socket(host, port);
             writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
@@ -37,7 +38,7 @@ public class ClientChat {
 
             printHelp();
 
-            // petla do wysylania wiadomosci, w tym logowania, rejestrowania itd
+            // petla do wysylania wiadomosci, w tym logowania, wysyłania packetu do serwera z prośbą o liste znajomych itd
             sendingLoop(receiver);
 
             //zamkniecie
@@ -88,6 +89,8 @@ public class ClientChat {
         }
     }
 
+
+    //przekształcanie danych (przez packet.toJson() ) w formę poprawną do przekształcenia do pliku .json przed wysłaniem do serwera
     private static void send(Packet packet) {
         if (writer != null) {
             writer.println(packet.toJson());
@@ -171,6 +174,8 @@ public class ClientChat {
                 send(new Packet(PacketEnum.FRIEND_INVITE, currentUser, "SERVER", null));
                 break;
 
+
+            //wysyłanie prośby o  liste znajomych i ich aktualnego statusu do servera
             case "friends":
                 if (!requireLogin()) return;
                 send(new Packet(PacketEnum.FRIEND_LIST, currentUser, "SERVER", null));

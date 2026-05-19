@@ -25,7 +25,7 @@ public class ClientReciever implements Runnable {
                 receivedPacket = Packet.fromJson(line);// recieved packet od serwera
                 if (receivedPacket == null) continue;//pomijamy puste packety
 
-                //rodzaj powiadomienia w zaleznosci od rodzaju packetu.
+                //rodzaj powiadomienia w zaleznosci od rodzaju packetu czytelnie dla klienta
                 switch (receivedPacket.getType()) {
                     case SUCCESS:
                         System.out.println("\rsukces: " + receivedPacket.getData());
@@ -52,6 +52,7 @@ public class ClientReciever implements Runnable {
                         printInvites(receivedPacket.getData());
                         System.out.print("> ");
                         break;
+                    //pobieranie listy znajomych i ich aktualnego statusu z servera
                     case FRIEND_LIST:
                         System.out.println("\r");
                         printFriendList(receivedPacket.getData());
