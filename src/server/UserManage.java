@@ -76,7 +76,7 @@ public class UserManage {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             return Base64.getEncoder().encodeToString(md.digest(password.getBytes(StandardCharsets.UTF_8))); //hashowanie haseł w pliku (dodatkowe bezpieczeństwo)
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("błąd hashowania", e);
+            throw new RuntimeException("blad hashowania", e);
         }
     }
     //sprawdzanie czy dwóch użytkowników jest znajomymi
