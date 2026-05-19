@@ -40,7 +40,7 @@ public class ServerChat {
                         }
                     });
                 } else {
-                    System.out.println("Odrzucono połączenie " + clientSocket.getInetAddress());
+                    System.out.println("Odrzucono polaczenie " + clientSocket.getInetAddress());
                     clientSocket.close();
                 }
             }

@@ -27,7 +27,7 @@ public class ClientChat {
             socket = new Socket(host, port);
             writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-            System.out.println("połączono \n");
+            System.out.println("polaczono \n");
 
 
             //osobny watek na odbieranie wiadomosci
@@ -44,10 +44,10 @@ public class ClientChat {
             if (!socket.isClosed()) {
                 socket.close();
             }
-            System.out.println("rozłączono.");
+            System.out.println("rozlaczono.");
         }
         catch (Exception e) {
-            System.err.println("błąd : " + e.getMessage());
+            System.err.println("blad : " + e.getMessage());
         }
     }
 
@@ -76,7 +76,7 @@ public class ClientChat {
                         socket.close();
                     }
                 } catch (IOException e) {
-                    System.err.println("błąd : " + e.getMessage());
+                    System.err.println("blad : " + e.getMessage());
 
                 }
                 receiver.stop();
@@ -96,7 +96,7 @@ public class ClientChat {
 
     private static boolean requireLogin() {
         if (currentUser == null) {
-            System.out.println("musisz się zalogować (login <login> <hasło>).");
+            System.out.println("musisz się zalogowac (login <login> <haslo>).");
             System.out.print("> ");
             return false;
         }
@@ -111,20 +111,20 @@ public class ClientChat {
         switch (cmd) {
             case "register":
                 if (parts.length < 3) {
-                    System.out.println("register <login> <hasło>");
+                    System.out.println("register <login> <haslo>");
                     return;
                 }
                 send(new Packet(PacketEnum.REGISTER, parts[1], "SERVER", parts[2]));
                 break;
             case "login":
                 if (parts.length < 3) {
-                    System.out.println("login <login> <hasło>");
+                    System.out.println("login <login> <haslo>");
                     return; }
                 currentUser = parts[1];
                 send(new Packet(PacketEnum.LOGIN, parts[1], "SERVER", parts[2]));
                 break;
             case "logout":
-                if (currentUser == null) { System.out.println("nie jesteś zalogowany.");
+                if (currentUser == null) { System.out.println("nie jestes zalogowany.");
                     return;
                 }
                 send(new Packet(PacketEnum.LOGOUT, currentUser, "SERVER", null));
@@ -132,7 +132,7 @@ public class ClientChat {
                 break;
             case "msg":
                 if (parts.length < 3) {
-                    System.out.println("msg <odbiorca> <treść>");
+                    System.out.println("msg <odbiorca> <tresc>");
                     return;
                 }
                 if (!requireLogin()) return;//tylko zalogowany może wysyłać
@@ -180,7 +180,7 @@ public class ClientChat {
                 printHelp();
                 break;
             default:
-                System.out.println("nie ma takiej komendy. wpisz 'help' aby zobaczyć dostępne komendy.");
+                System.out.println("nie ma takiej komendy. wpisz 'help' aby zobaczyc dostepne komendy.");
         }
 
     }
@@ -189,17 +189,17 @@ public class ClientChat {
     //wyswietlanie pomocy
     private static void printHelp() {
         System.out.println(" komendy ");
-        System.out.println(" register <login> <hasło> nowe konto ");
-        System.out.println(" login <login> <hasło> logowanie ");
+        System.out.println(" register <login> <haslo> nowe konto ");
+        System.out.println(" login <login> <haslo> logowanie ");
         System.out.println(" logout wylogowanie");
-        System.out.println(" msg <odbiorca> <treść> wyślij wiadomość");
-        System.out.println(" add <login>  zaproś do znajomych");
+        System.out.println(" msg <odbiorca> <tresc> wyslij wiadomosc");
+        System.out.println(" add <login>  zapros do znajomych");
         System.out.println(" accept <login>  zaakceptuj znajomego");
-        System.out.println(" reject <login>  odrzuć znajomego");
-        System.out.println(" invites wyświetl listę zaproszen do znajomych");
-        System.out.println(" friends wyświetl listę swoich znajomych");
+        System.out.println(" reject <login>  odrzuc znajomego");
+        System.out.println(" invites wyswietl liste zaproszen do znajomych");
+        System.out.println(" friends wyswietl liste swoich znajomych");
         System.out.println(" help pomoc ");
-        System.out.println(" exit zakończ ");
+        System.out.println(" exit zakoncz ");
 
     }
 

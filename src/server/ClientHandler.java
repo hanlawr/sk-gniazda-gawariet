@@ -64,23 +64,23 @@ public class ClientHandler implements Runnable{
         String password = packet.getData();
 
         if (login == null || password == null) {
-            send(error("Brak danych logowania")); return;
+            send(error("brak danych logowania")); return;
         }
         if (!userManager.userExists(login)) {
-            send(error("Użytkownik nie istnieje")); return;
+            send(error("uzytkownik nie istnieje")); return;
         }
         if (!userManager.authenticate(login, password)) {
-            send(error("Nieprawidłowe hasło")); return;
+            send(error("nieprawidlowe haslo")); return;
         }
         if (sessionManager.isOnline(login)) {
-            send(error("Użytkownik już zalogowany")); return;
+            send(error("uzytkownik juz zalogowany")); return;
         }
         if(loggedInUser != null){
-            send(error("Jesteś już zalogowany na konto "+ login +". Nie możesz się ponownie zalogować. Najpierw się wyloguj komendą logout")); return;
+            send(error("jestes już zalogowany na konto "+ login +". nie mozesz się ponownie zalogowac. Najpierw się wyloguj komendą logout")); return;
         }else{
             loggedInUser = login;
             sessionManager.addSession(login, socket, writer);
-            send(success("Zalogowano jako " + login));
+            send(success("zalogowano jako " + login));
         }
     }
 
@@ -89,15 +89,15 @@ public class ClientHandler implements Runnable{
         String password = packet.getData();
 
         if (login == null || login.isBlank() || password == null || password.isBlank()) {
-            send(error("login i hasło są puste.")); return;
+            send(error("login i haslo są puste.")); return;
         }
         if(loggedInUser != null){
-            send(error("Jesteś już zalogowany na konto "+ login +". Nie możesz się ponownie zarejestrować. Najpierw się wyloguj komendą logout"));
+            send(error("jestes już zalogowany na konto "+ login +". Nie mozesz się ponownie zarejestrowac. Najpierw się wyloguj komendą logout"));
         }
         if (userManager.register(login, password)) {
-            send(success("jesteś zarejestrowany. teraz zaloguj się login <login> <hasło>"));
+            send(success("jestes zarejestrowany. teraz zaloguj się login <login> <haslo>"));
         } else {
-            send(error("login '" + login + "' jest już w użyciu"));
+            send(error("login '" + login + "' jest już w uzyciu"));
         }
     }
 
@@ -115,17 +115,17 @@ public class ClientHandler implements Runnable{
         String recipient = packet.getRecipient();
         String message   = packet.getData();
         if (recipient == null || message == null || message.isBlank()) {
-            send(error("nieprawidłowe dane wiadomości.")); return;
+            send(error("nieprawidlowe dane wiadomosci.")); return;
         }
         if (!userManager.userExists(recipient)) {
-            send(error("użytkownik o loginie'" + recipient + "' nie istnieje")); return;
+            send(error("uzytkownik o loginie'" + recipient + "' nie istnieje")); return;
         }
 
         if (!sessionManager.isOnline(recipient)) {
-            send(error("użytkownik o loginie '" + recipient + "' jest teraz offline")); return;
+            send(error("uzytkownik o loginie '" + recipient + "' jest teraz offline")); return;
         }
         if (recipient.equals(loggedInUser)) {
-            send(error("nie możesz wysłać wiadomości do siebie"));
+            send(error("nie mozesz wyslac wiadomosci do siebie"));
             return;
         }
         if (userManager.areFriends(loggedInUser, recipient)) {
@@ -134,9 +134,9 @@ public class ClientHandler implements Runnable{
                     gson.toJson(new Packet(PacketEnum.RECEIVE_MESSAGE, loggedInUser, recipient, message))
             );
 
-            send(success("Wiadomość dostarczono"));
+            send(success("wiadomosc dostarczono"));
         }else{
-            send(error("użytkownik o loginie " + recipient + " i ty nie jesteście znajomymi"));
+            send(error("uzytkownik o loginie " + recipient + " i ty nie jestescie znajomymi"));
         }
 
     }
@@ -145,7 +145,7 @@ public class ClientHandler implements Runnable{
 
     private boolean requireLogin() {
         if (loggedInUser == null) {
-            send(error("Musisz być zalogowany"));
+            send(error("musisz być zalogowany"));
             return false;
         }
         return true;
@@ -180,27 +180,27 @@ public class ClientHandler implements Runnable{
 
         String target = packet.getData();
         if (target == null || target.isBlank()) {
-            send(error("podaj login użytkownika"));
+            send(error("podaj login uzytkownika"));
             return;
         }
         if (target.equals(loggedInUser)) {
-            send(error("nie możesz dodać siebie do znajomych"));
+            send(error("nie mozesz dodać siebie do znajomych"));
             return;
         }
         if (!userManager.userExists(target)) {
-            send(error("użytkownik '" + target + "' nie istnieje"));
+            send(error("uzytkownik '" + target + "' nie istnieje"));
             return;
         }
         if (userManager.areFriends(loggedInUser, target)) {
-            send(error("jesteście już znajomymi"));
+            send(error("jestescie już znajomymi"));
             return;
         }
         if (userManager.hasPendingFriendRequest(loggedInUser, target)) {
-            send(error("Użytkownik " + target + " już wysłał Ci zaproszenie. Zaakceptuj lub odrzuć je."));
+            send(error("uzytkownik " + target + " już wyslal Ci zaproszenie. zaakceptuj lub odrzuć je."));
             return;
         }
         if (userManager.sendFriendRequest(loggedInUser, target)) {
-            send(success("zaproszenie wysłane do " + target));
+            send(success("zaproszenie wyslane do " + target));
 
             if (sessionManager.isOnline(target)) {
                 sessionManager.getSession(target).getWriter().println(
@@ -208,7 +208,7 @@ public class ClientHandler implements Runnable{
                 );
             }
         } else {
-            send(error("nie można wysłać zaproszenia do " + target));
+            send(error("nie mozna wyslac zaproszenia do " + target));
         }
     }
     private void handleAcceptFriend(Packet packet) {
@@ -236,7 +236,7 @@ public class ClientHandler implements Runnable{
         if (!requireLogin()) return;
 
         String from = packet.getData();
-        if (from == null) { send(error("Brak danych")); return; }
+        if (from == null) { send(error("brak danych")); return; }
 
         if (userManager.rejectFriendRequest(loggedInUser, from)) {
             send(success("odrzucono zaproszenie od " + from));

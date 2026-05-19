@@ -67,7 +67,7 @@ public class ClientReciever implements Runnable {
 
         } catch (IOException e) {
             if (running) {
-                System.err.println("\nutracono połączenie z serwerem.");
+                System.err.println("\nutracono polaczenie z serwerem.");
             }
         } finally {
             stop();
@@ -79,7 +79,7 @@ public class ClientReciever implements Runnable {
         try {
             if (reader != null) reader.close();// zamknięcie strumienia
         } catch (IOException e) {
-            System.err.println("błąd : " + e.getMessage());
+            System.err.println("blad : " + e.getMessage());
 
         }
     }
@@ -110,8 +110,8 @@ public class ClientReciever implements Runnable {
         {
                 System.out.println(inviter +" chce cie dodac");
             }
-        System.out.println("accept <login> żeby zaakceptować");
-        System.out.println("reject <login>  żeby odrzucić ");
+        System.out.println("accept <login> zeby zaakceptowac");
+        System.out.println("reject <login>  zeby odrzucic");
 
     }
 }
