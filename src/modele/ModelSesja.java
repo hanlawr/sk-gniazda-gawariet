@@ -14,7 +14,7 @@ public class ModelSesja {
         this.writer = writer;
     }
 
-    public String getLogin()            { return login; }
-    public Socket getSocket()           { return socket; }
+    /*public String getLogin()            { return login; }
+    public Socket getSocket()           { return socket; }*/
     public PrintWriter getWriter()      { return writer; }
 }

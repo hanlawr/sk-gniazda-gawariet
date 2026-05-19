@@ -15,7 +15,7 @@ public class ServerChat {
     private final UserManage  userManager;
     private final SessionManage sessionManager;
     private final ExecutorService threadPool;
-    private final Semaphore connectionSlots;
+    private final Semaphore connectionSlots; //nadawanie pozwoleń do połączenia
 
     public ServerChat(int port) {
         this.userManager     = new UserManage();
@@ -24,13 +24,13 @@ public class ServerChat {
         this.connectionSlots = new Semaphore(MAX_CLIENTS);
         this.PORT=port;
     }
-
+    //wątek
     public void start() {
         System.out.println("Uruchomiono serwer");
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (!Thread.currentThread().isInterrupted()) {
                 Socket clientSocket = serverSocket.accept();
-                if (connectionSlots.tryAcquire()) {
+                if (connectionSlots.tryAcquire()) { //próba nadania pozwolenia do połączenia
                     threadPool.execute(() -> {
                         try {
                             new ClientHandler(clientSocket, userManager, sessionManager).run();
@@ -56,7 +56,7 @@ public class ServerChat {
     }
 
     public static void main(String[] args) {
-        int port = args.length > 1 ? Integer.parseInt(args[0]) : 12347;
+        int port = args.length > 1 ? Integer.parseInt(args[0]) : 12347; //ustawianie portu przy wywołaniu programu w razie co ustawiony defaultowy
         new ServerChat(port).start();
     }
 }

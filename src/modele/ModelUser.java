@@ -10,12 +10,12 @@ public class ModelUser {
     private List<String> pendingFriends;
     public ModelUser(){
         this.friends=new ArrayList<>();
-        this.pendingFriends= new ArrayList<>();
+        this.pendingFriends= new ArrayList<>(); //nadanie użytkownikom listy przyjaciół
     }
     public ModelUser(String login, String passwordHash) {
         this();
         this.login = login;
-        this.passwordHash = passwordHash;
+        this.passwordHash = passwordHash; //nadanie użytkownikom loginu i hasła
     }
 
     public String getLogin()                            { return login; }

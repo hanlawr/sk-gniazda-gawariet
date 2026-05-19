@@ -39,7 +39,7 @@ public class UserManage {
             System.out.println(e.getMessage());
         }
     }
-
+    //wpisywanie użytkowników do pliku users.json
     private synchronized void saveUsers() {
         File file = new File(DATA_FILE);
         file.getParentFile().mkdirs();
@@ -50,7 +50,7 @@ public class UserManage {
         }
     }
 
-
+    //obsługa rejestracji
     public synchronized boolean register(String login, String password) {
         if (users.containsKey(login)) return false;
         String hash = hashPassword(password);
@@ -58,19 +58,19 @@ public class UserManage {
         saveUsers();
         return true;
     }
-
+    //sprawdzanie hasła
     public synchronized boolean authenticate(String login, String password) {
         ModelUser user = users.get(login);
         if (user == null) return false;
         String loginHash=hashPassword(password);
         return loginHash.equals(user.getPasswordHash());
     }
-
+    //czy istnieje użytkownik o danym loginie
     public synchronized boolean userExists(String login) {
         return users.containsKey(login);
     }
 
-
+    //zahashowanie hasła żeby nie było czytelne w pliku users.json
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -79,13 +79,14 @@ public class UserManage {
             throw new RuntimeException("błąd hashowania", e);
         }
     }
+    //sprawdzanie czy dwóch użytkowników jest znajomymi
     public synchronized boolean areFriends(String login1, String login2) {
         ModelUser user = users.get(login1);
         if (user == null) return false;
         List<String> friends = user.getFriends();
         return friends != null && friends.contains(login2);
     }
-
+    //sprawdzenie czy zaproszenia są wysłane
     public synchronized boolean sendFriendRequest(String from, String to) {
         ModelUser target = users.get(to);
         if (target == null) return false;
@@ -96,7 +97,7 @@ public class UserManage {
         }
         return true;
     }
-
+    //sprawdzenie czy zaproszenie było zaakceptowane i zapisane
     public synchronized boolean acceptFriendRequest(String login, String from) {
         ModelUser user = users.get(login);
         ModelUser fromUser = users.get(from);
@@ -109,7 +110,7 @@ public class UserManage {
         saveUsers();
         return true;
     }
-
+    //analogicznie dla odrzuceń
     public synchronized boolean rejectFriendRequest(String login, String from) {
         ModelUser user = users.get(login);
         if (user == null) return false;
@@ -117,20 +118,21 @@ public class UserManage {
         if (removed) saveUsers();
         return removed;
     }
-
+    //wyciąganie listy znajomych
     public synchronized List<String> getFriends(String login) {
         ModelUser user = users.get(login);
         if (user == null) return Collections.emptyList();
         List<String> friends = user.getFriends();
         return friends != null ? new ArrayList<>(friends) : Collections.emptyList();
     }
+    //wyciąganie listy oczekujących zaproszeń
     public synchronized List<String> getPendingFriends(String login) {
         ModelUser user = users.get(login);
         if (user == null) return Collections.emptyList();
         List<String> pendingFriends = user.getPendingFriends();
         return pendingFriends != null ? new ArrayList<>(pendingFriends) : Collections.emptyList();
     }
-
+    //sprawdzanie czy dwójka użytkowników ma między sobą wysłane zaproszenie
     public synchronized boolean hasPendingFriendRequest(String login, String target) {
         ModelUser user = users.get(login);
         if (user == null) return false;

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManage {
 
-        private final Map<String, ModelSesja> sessions = new ConcurrentHashMap<>(); //zbiera i przechowuje wszystkie sockety
+        private final Map<String, ModelSesja> sessions = new ConcurrentHashMap<>(); //zbiera i przechowuje loginy i sesje
 
         public void addSession(String login, Socket socket, PrintWriter writer) {
             sessions.put(login, new ModelSesja(login, socket, writer)); //łączy login z socketem i writerem

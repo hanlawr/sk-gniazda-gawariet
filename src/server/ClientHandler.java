@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class ClientHandler implements Runnable{
-
+    //ogólnie klasa zajmuje się komunikacją między serwerem a klientem przyjmując requesty od klienta i wysyłając na nie odpowiedzi
     private final Socket socket;
     private final UserManage userManager;
     private final SessionManage sessionManager;
@@ -58,7 +58,7 @@ public class ClientHandler implements Runnable{
                 send(error("nieznany typ pakietu " + packet.getType()));
         }
     }
-
+    //obsługa logowania
     private void handleLogin(Packet packet) {
         String login    = packet.getSender();
         String password = packet.getData();
@@ -76,14 +76,14 @@ public class ClientHandler implements Runnable{
             send(error("Użytkownik już zalogowany")); return;
         }
         if(loggedInUser != null){
-            send(error("Jesteś już zalogowany na konto "+ login +". Nie możesz się ponownie zalogować. Najpierw się wyloguj komendą logout")); return;
+            send(error("Jesteś już zalogowany na konto "+ login +". Nie możesz się ponownie zalogować. Najpierw się wyloguj komendą logout"));
         }else{
             loggedInUser = login;
             sessionManager.addSession(login, socket, writer);
             send(success("Zalogowano jako " + login));
         }
     }
-
+    //rejestracja
     private void handleRegister(Packet packet) {
         String login    = packet.getSender();
         String password = packet.getData();
@@ -100,7 +100,7 @@ public class ClientHandler implements Runnable{
             send(error("login '" + login + "' jest już w użyciu"));
         }
     }
-
+    //wylogowanie
     private void handleLogout() {
         if (loggedInUser != null) {
             sessionManager.removeSession(loggedInUser);
@@ -108,7 +108,7 @@ public class ClientHandler implements Runnable{
         }
         send(success("Wylogowano"));
     }
-
+    //wysyłanie wiadomości
     private void handleSendMessage(Packet packet) {
         if (!requireLogin()) return;
 
@@ -133,7 +133,7 @@ public class ClientHandler implements Runnable{
             recipientSession.getWriter().println(
                     gson.toJson(new Packet(PacketEnum.RECEIVE_MESSAGE, loggedInUser, recipient, message))
             );
-
+            //pakiet wysyłany do użytkownika
             send(success("Wiadomość dostarczono"));
         }else{
             send(error("użytkownik o loginie " + recipient + " i ty nie jesteście znajomymi"));
@@ -175,6 +175,7 @@ public class ClientHandler implements Runnable{
         }
         catch (IOException ignored) {}
     }
+    //dodawanie przyjaciół
     private void handleAddFriend(Packet packet) {
         if (!requireLogin()) return;
 
@@ -211,6 +212,7 @@ public class ClientHandler implements Runnable{
             send(error("nie można wysłać zaproszenia do " + target));
         }
     }
+    //akceptowanie znajomych
     private void handleAcceptFriend(Packet packet) {
         if (!requireLogin()) return;
 
@@ -231,7 +233,7 @@ public class ClientHandler implements Runnable{
             send(error("brak zaproszenia od " + from));
         }
     }
-
+    //odrzucanie znajomych
     private void handleRejectFriend(Packet packet) {
         if (!requireLogin()) return;
 
@@ -244,7 +246,7 @@ public class ClientHandler implements Runnable{
             send(error("brak zaproszenia od " + from));
         }
     }
-
+    //pobieranie listy znajomych
     private void handleGetFriends() {
         if (!requireLogin()) return;
 
@@ -261,6 +263,7 @@ public class ClientHandler implements Runnable{
         }
         send(new Packet(PacketEnum.FRIEND_LIST, "serwer", loggedInUser, sb.toString()));
     }
+    //pobieranie listy oczekujących zaproszeń
     private void handleInvites(){
         if (!requireLogin()) return;
 
